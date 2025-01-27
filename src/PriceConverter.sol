@@ -18,8 +18,4 @@ library PriceConverter {
         // the actual ETH/USD conversion rate, after adjusting the extra 0s.
         return ethAmountInUsd;
     }
-
-    function getVersion(AggregatorV3Interface priceFeed) internal view returns (uint256) {
-        return priceFeed.version();
-    }
 }

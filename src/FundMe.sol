@@ -52,7 +52,7 @@ contract FundMe {
     }
 
     function getPriceFeedVersion() public view returns (uint256) {
-        return PriceConverter.getVersion(s_priceFeed);
+        return s_priceFeed.version();
     }
 
     // Explainer from: https://solidity-by-example.org/fallback/
