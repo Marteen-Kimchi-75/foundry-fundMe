@@ -3,13 +3,14 @@ pragma solidity ^0.8.24;
 
 import {Test, console} from "lib/forge-std/src/Test.sol";
 import {FundMe} from "../src/FundMe.sol";
+import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
     FundMe fundMe;
-    address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
 
     function setUp() external {
-        fundMe = new FundMe(priceFeedAddress); // ETH/USD Sepolia address
+        DeployFundMe deployFundMe = new DeployFundMe();
+        fundMe = deployFundMe.run();
     }
 
     function testMinDollarRequired() public view {
@@ -18,7 +19,8 @@ contract FundMeTest is Test {
 
     function testOwnerIsMsgSender() public view {
         // assertEq(fundMe.i_owner(), msg.sender); // msg.sender is us, but fundMe is deployed by FundMeTest which was written by us
-        assertEq(fundMe.i_owner(), address(this));
+        // assertEq(fundMe.i_owner(), address(this)); // Changing again to msg.sender because of the changed code
+        assertEq(fundMe.i_owner(), msg.sender);
     }
 
     function testPriceFeedVersion() public view {
