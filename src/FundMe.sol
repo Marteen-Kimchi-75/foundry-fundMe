@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import {PriceConverter} from "src/PriceConverter.sol";
 
-error NotOwner();
+error FundMe__NotOwner();
 
 contract FundMe {
     using PriceConverter for uint256;
@@ -25,7 +25,7 @@ contract FundMe {
     }
 
     modifier onlyOwner() {
-        if (msg.sender != i_owner) revert NotOwner();
+        if (msg.sender != i_owner) revert FundMe__NotOwner();
         _;
     }
 
@@ -35,7 +35,7 @@ contract FundMe {
             addressToAmountFunded[funder] = 0;
         }
         funders = new address[](0);
-        
+
         (bool callSuccess,) = payable(msg.sender).call{value: address(this).balance}("");
         require(callSuccess, "Call failed");
     }
