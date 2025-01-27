@@ -6,9 +6,10 @@ import {FundMe} from "../src/FundMe.sol";
 
 contract FundMeTest is Test {
     FundMe fundMe;
+    address priceFeedAddress = 0x694AA1769357215DE4FAC081bf1f309aDC325306;
 
     function setUp() external {
-        fundMe = new FundMe(0x694AA1769357215DE4FAC081bf1f309aDC325306); // ETH/USD Sepolia address
+        fundMe = new FundMe(priceFeedAddress); // ETH/USD Sepolia address
     }
 
     function testMinDollarRequired() public view {
