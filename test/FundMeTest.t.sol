@@ -7,10 +7,14 @@ import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 
 contract FundMeTest is Test {
     FundMe fundMe;
+    address USER = makeAddr("user");
+    uint256 constant SEND_VALUE = 1 ether; // Testing by sending 1 ETH
+    uint256 constant STARTING_BALANCE = 10 ether;
 
     function setUp() external {
         DeployFundMe deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run();
+        vm.deal(USER, STARTING_BALANCE); // Give USER some ETH
     }
 
     function testMinDollarRequired() public view {
@@ -26,5 +30,16 @@ contract FundMeTest is Test {
     function testPriceFeedVersion() public view {
         console.log(fundMe.getPriceFeedVersion());
         assertEq(fundMe.getPriceFeedVersion(), 4);
+    }
+
+    function testFundFailsWithoutEnoughEth() public {
+        vm.expectRevert(); // FOUNDRY CHEATCODE
+        fundMe.fund(); // Sending 0 ETH, if we want to send ETH: fundMe.fund{value: ETH_AMOUNT}();
+    }
+
+    function testFundUpdatesFundersList() public {
+        vm.prank(USER); // ANOTHER FOUNDRY CHEATCODE -> Next txn will be sent by USER
+        fundMe.fund{value: SEND_VALUE}(); // Sending ETH (by USER)
+        assertEq(fundMe.viewFundedAmount(USER), SEND_VALUE);
     }
 }
