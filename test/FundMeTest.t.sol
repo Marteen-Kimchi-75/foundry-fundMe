@@ -10,6 +10,7 @@ contract FundMeTest is Test {
     address USER = makeAddr("Kimy");
     uint256 constant SEND_VALUE = 1 ether; // Testing by sending 1 ETH
     uint256 constant STARTING_BALANCE = 10 ether;
+    // uint256 constant GAS_PRICE = 0.0001 ether;
 
     function setUp() external {
         DeployFundMe deployFundMe = new DeployFundMe();
@@ -87,17 +88,30 @@ contract FundMeTest is Test {
         uint256 startingFundMeBalance = address(fundMe).balance;
 
         // Act
+        // uint256 gasStart = gasleft(); // Say gas limit: 20000
+        // vm.txGasPrice(GAS_PRICE);
         vm.prank(owner);
-        fundMe.withdraw();
+        fundMe.withdraw(); // Should have spent gas, right? In anvil, gas price defaults to zero
+        // uint256 gasEnd = gasleft(); // Therefore, unused gas: 5000
+        // uint256 gasUsed = (gasStart - gasEnd) * tx.gasprice;
 
         // Assert
         assert(address(fundMe).balance == 0);
-        assert(startingOwnerBalance + startingFundMeBalance == owner.balance);
+        assert(startingOwnerBalance + startingFundMeBalance == owner.balance); // Should not have been equal because of gas spent for txn
     }
 
     function testOnlyOwnerCanWithdraw() public {
         vm.expectRevert();
         vm.prank(USER);
         fundMe.withdraw();
+    }
+
+    function testPrintStorageData() public view {
+        for(uint256 i = 0; i < 3; i++) {
+            bytes32 value = vm.load(address(fundMe), bytes32(i));
+            console.log("Value at location", i, ":");
+            console.logBytes32(value);
+        }
+        console.log("PriceFeed address:", address(fundMe.getPriceFeed()));
     }
 }
